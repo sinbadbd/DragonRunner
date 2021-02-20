@@ -11,12 +11,6 @@ public class Player : MonoBehaviour
  
     public float transalation;
 
-    //[SerializeField]
-    //private float _speed = 0.5f;
-
-    //[SerializeField]
-    //private bool _grounded = false;
-
     [SerializeField]
     private float _jumpForced = 5f;
 
@@ -24,6 +18,9 @@ public class Player : MonoBehaviour
     private LayerMask _groundLayerMask;
 
     private bool resetJumpNeeded = false;
+
+    [SerializeField]
+    private float _playerSpeed = 5f;
 
     Animator anim;
     void Start()
@@ -48,7 +45,7 @@ public class Player : MonoBehaviour
     void movement()
     {
         transalation = Input.GetAxis("Horizontal");
-        _rigid.velocity = new Vector2(transalation, _rigid.velocity.y); // left & right movement
+        _rigid.velocity = new Vector2(transalation * _playerSpeed, _rigid.velocity.y); // left & right movement
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded() == true) // jump
         {
