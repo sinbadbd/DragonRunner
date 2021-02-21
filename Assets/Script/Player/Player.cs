@@ -9,13 +9,7 @@ public class Player : MonoBehaviour
     private Rigidbody2D _rigid;
     SpriteRenderer spriteRenderer;
  
-    public float transalation;
-
-    //[SerializeField]
-    //private float _speed = 0.5f;
-
-    //[SerializeField]
-    //private bool _grounded = false;
+    private float transalation;
 
     [SerializeField]
     private float _jumpForced = 5f;
@@ -24,13 +18,20 @@ public class Player : MonoBehaviour
     private LayerMask _groundLayerMask;
 
     private bool resetJumpNeeded = false;
+    private bool isCheckGrounded = false;
 
-    Animator anim;
+    [SerializeField]
+    private float _playerSpeed = 5f;
+
+   private PlayerAnimation anim;
+
+
+
     void Start()
     {
-        anim = GetComponent<Animator>();
+        anim = GetComponent<PlayerAnimation>();
         _rigid = GetComponent<Rigidbody2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
     }
 
@@ -39,23 +40,27 @@ public class Player : MonoBehaviour
     {
 
         movement();
-
-
-
-
+        Attack();
+        isCheckGrounded = isGrounded();
     }
 
     void movement()
     {
-        transalation = Input.GetAxis("Horizontal");
-        _rigid.velocity = new Vector2(transalation, _rigid.velocity.y); // left & right movement
+        transalation = Input.GetAxisRaw("Horizontal");
+
+        Flip(transalation);
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded() == true) // jump
         {
             _rigid.velocity = new Vector2(_rigid.velocity.x, _jumpForced);
-
+            anim.isJump(true);
+            //anim.isAttack();
             StartCoroutine(ResetJummpedRoutine());
+
         }
+
+        _rigid.velocity = new Vector2(transalation * _playerSpeed, _rigid.velocity.y); // left & right movement
+        anim.Move(transalation);
 
     }
 
@@ -68,15 +73,46 @@ public class Player : MonoBehaviour
 
         if (hitInfo.collider != null)
         {
-
-            //return resetJumpNeeded = true;
             if (resetJumpNeeded == false)
+            {
+                anim.isJump(false);
                 return true;
+            }
+               
         }
 
       return  false;
 
     }
+
+    void Attack()
+    {
+        if ((Input.GetButton("Fire1") && isCheckGrounded == true)){
+            anim.isAttack();
+        }
+    }
+
+
+    /// <summary>
+    ///
+    ///
+    ///  Move Left and right : solution-1
+    ///  
+    /// </summary>
+    /// <param name="move"></param>
+    ///
+
+    void Flip (float move)
+    {
+        if(move > 0)
+        {
+            spriteRenderer.flipX = false;
+        }else if(move < 0)
+        {
+            spriteRenderer.flipX = true;
+        }
+    }
+
 
     IEnumerator ResetJummpedRoutine()
     {
