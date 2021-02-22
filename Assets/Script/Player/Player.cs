@@ -26,13 +26,13 @@ public class Player : MonoBehaviour
    private PlayerAnimation anim;
 
 
-
+    private SpriteRenderer swordArcSprite;
     void Start()
     {
         anim = GetComponent<PlayerAnimation>();
         _rigid = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-
+        swordArcSprite = transform.GetChild(1).GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
@@ -107,9 +107,27 @@ public class Player : MonoBehaviour
         if(move > 0)
         {
             spriteRenderer.flipX = false;
-        }else if(move < 0)
+
+            swordArcSprite.flipX = false;
+            swordArcSprite.flipY = false;
+
+            Vector3 newPos = swordArcSprite.transform.localPosition;
+
+            newPos.x = 1.01f;
+            swordArcSprite.transform.localPosition = newPos;
+        }
+        else if(move < 0)
         {
             spriteRenderer.flipX = true;
+
+            swordArcSprite.flipX = true;
+            swordArcSprite.flipY = true;
+
+            Vector3 newPos = swordArcSprite.transform.localPosition;
+
+            newPos.x = -1.01f;
+            swordArcSprite.transform.localPosition = newPos;
+
         }
     }
 
